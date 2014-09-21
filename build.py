@@ -2,9 +2,12 @@ import sys
 import tarfile
 import os
 import urllib2
+import time
+import shutil
 import subprocess
 
 if __name__ == '__main__':
+    start_time = time.time()
     version_info = lambda v: map(lambda x: int(x), v.split('.'))
 
     # if the user provided an argument and it's a file, use that.
@@ -50,3 +53,5 @@ if __name__ == '__main__':
     subprocess.call('./configure --with-python', shell=True)
     subprocess.call('make', shell=True)
 
+    end_time = time.time()
+    print 'All operations took %ss' % ((end_time - start_time))
