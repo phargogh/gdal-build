@@ -2,6 +2,7 @@ import sys
 import tarfile
 import os
 import urllib2
+import subprocess
 
 if __name__ == '__main__':
     version_info = lambda v: map(lambda x: int(x), v.split('.'))
@@ -44,7 +45,8 @@ if __name__ == '__main__':
         print 'removing %s' % gdal_dir
         shutil.rmtree(gdal_dir)
 
-    os.chdir(gdal_dir):
-        subprocess.call('autogen.sh', shell=True)
-        subprocess.call('configure', shell=True)
-        subprocess.call('make', shell=True)
+    os.chdir(gdal_dir)
+    subprocess.call('./autogen.sh', shell=True)
+    subprocess.call('./configure --with-python', shell=True)
+    subprocess.call('make', shell=True)
+
