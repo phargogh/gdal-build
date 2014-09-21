@@ -7,6 +7,14 @@ import shutil
 import subprocess
 
 def download_gdal(version):
+    """Download the approprate version of the GDAL source from the official
+    download mirror.
+
+    version - the version of GDAL to download.  Must be a string in the form
+        1.1.1
+
+    Returns the absolute path to the downloaded tar.gz file."""
+
     # parse out the version info
     major, minor, release = version_info(version)
 
