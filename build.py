@@ -36,14 +36,14 @@ if __name__ == '__main__':
         localFile.write(u.read())
         localFile.close()
 
-    print 'extracting', local_gzip
-    tfile = tarfile.open(local_gzip, 'r:gz')
-    tfile.extractall('.')
-
     gdal_dir = local_gzip.replace('.tar.gz', '')
     if os.path.exists(gdal_dir):
         print 'removing %s' % gdal_dir
         shutil.rmtree(gdal_dir)
+
+    print 'extracting', local_gzip
+    tfile = tarfile.open(local_gzip, 'r:gz')
+    tfile.extractall('.')
 
     os.chdir(gdal_dir)
     subprocess.call('./autogen.sh', shell=True)
