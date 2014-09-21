@@ -1,4 +1,5 @@
 import sys
+import tarfile
 import os
 import urllib2
 
@@ -33,4 +34,8 @@ if __name__ == '__main__':
         localFile = open(local_gzip, 'w')
         localFile.write(u.read())
         localFile.close()
+
+    print 'extracting', local_gzip
+    tfile = tarfile.open(local_gzip, 'r:gz')
+    tfile.extractall('.')
 
