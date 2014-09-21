@@ -6,6 +6,27 @@ import time
 import shutil
 import subprocess
 
+def download_gdal(version):
+    # parse out the version info
+    major, minor, release = version_info(version)
+
+    gdal_download_uri = 'http://download.osgeo.org/gdal/'
+    if minor >= 10:
+        gdal_download_uri += version + '/'
+
+    local_gzip = 'gdal-%s.tar.gz' % version
+    gdal_download_uri += local_gzip
+    print gdal_download_uri
+
+    print 'downloading ...'
+    u = urllib2.urlopen(gdal_download_uri)
+    localFile = open(local_gzip, 'w')
+    localFile.write(u.read())
+    localFile.close()
+
+    return os.path.abspath(local_gzip)
+
+
 if __name__ == '__main__':
     start_time = time.time()
     version_info = lambda v: map(lambda x: int(x), v.split('.'))
@@ -21,23 +42,7 @@ if __name__ == '__main__':
         local_gzip = source_filepath
     else:
         gdal_version = '1.11.0'
-        # parse out the version info
-        major, minor, release = version_info(gdal_version)
-
-
-        gdal_download_uri = 'http://download.osgeo.org/gdal/'
-        if minor >= 10:
-            gdal_download_uri += gdal_version + '/'
-
-        local_gzip = 'gdal-%s.tar.gz' % gdal_version
-        gdal_download_uri += local_gzip
-        print gdal_download_uri
-
-        print 'downloading ...'
-        u = urllib2.urlopen(gdal_download_uri)
-        localFile = open(local_gzip, 'w')
-        localFile.write(u.read())
-        localFile.close()
+        local_gzip = download_gdal(gdal_version)
 
     gdal_dir = local_gzip.replace('.tar.gz', '')
     if os.path.exists(gdal_dir):
