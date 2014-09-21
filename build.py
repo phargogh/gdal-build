@@ -1,3 +1,4 @@
+import urllib2
 
 if __name__ == '__main__':
     gdal_version = '1.11.0'
@@ -8,6 +9,13 @@ if __name__ == '__main__':
     if minor >= 10:
         gdal_download_uri += gdal_version + '/'
 
-    gdal_download_uri += 'gdal-%s.tar.gz' % gdal_version
+    local_gzip = 'gdal-%s.tar.gz' % gdal_version
+    gdal_download_uri += local_gzip
     print gdal_download_uri
+
+    print 'downloading ...'
+    u = urllib2.urlopen(gdal_download_uri)
+    localFile = open(local_gzip, 'w')
+    localFile.write(u.read())
+    localFile.close()
 
