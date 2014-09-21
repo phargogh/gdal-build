@@ -39,3 +39,12 @@ if __name__ == '__main__':
     tfile = tarfile.open(local_gzip, 'r:gz')
     tfile.extractall('.')
 
+    gdal_dir = local_gzip.replace('.tar.gz', '')
+    if os.path.exists(gdal_dir):
+        print 'removing %s' % gdal_dir
+        shutil.rmtree(gdal_dir)
+
+    os.chdir(gdal_dir):
+        subprocess.call('autogen.sh', shell=True)
+        subprocess.call('configure', shell=True)
+        subprocess.call('make', shell=True)
