@@ -57,9 +57,20 @@ if __name__ == '__main__':
         print 'removing %s' % gdal_dir
         shutil.rmtree(gdal_dir)
 
-    print 'extracting', local_gzip
-    tfile = tarfile.open(local_gzip, 'r:gz')
-    tfile.extractall('.')
+    try:
+        print 'extracting', local_gzip
+        tfile = tarfile.open(local_gzip, 'r:gz')
+        tfile.extractall('.')
+    except zlib.error:
+        # happens when gzip is corrupt.
+        # in this case, get the zipfile instead
+        print 'gzip extraction failed.  Trying zipfile'
+        local_zip = download_gdal(gdal_version, 'zip')
+        with open(local_zip, 'rb') as MyZip:
+              print(MyZip.read(4))
+
+        zip = zipfile.ZipFile(local_zip)
+        zip.extractall('.')
 
     os.chdir(gdal_dir)
     if platform.system() == 'Windows':
