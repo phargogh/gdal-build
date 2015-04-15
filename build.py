@@ -142,6 +142,7 @@ if __name__ == '__main__':
         }
         set_gdal_home(os.path.abspath('nmake.opt'), dirs)
         subprocess.call('nmake /f makefile.vc')
+        subprocess.call('nmake /f makefile.vc install')
         os.chdir('swig\\python')
         subprocess.call('python setup.py build bdist_wininst', shell=True)
         subprocess.call('python setup.py build bdist_wheel', shell=True)
