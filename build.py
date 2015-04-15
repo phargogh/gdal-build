@@ -16,16 +16,33 @@ def _download_archive(url):
     local_file.write(u.read())
     local_file.close()
 
+def _unzip_tarfile(filepath, fmt='gz'):
+    # fmt one of 'gz'|'bz2'
+    tfile = tarfile.open(filepath, 'r:%s' % fmt)
+    tfile.extractall('.')
+
 def download_geos(version):
     # parse out the version info
-    major, minor, release = version_info(version)
+    major, minor, release = tuple([int(x) for x in version.split('.')])
     geos_download_uri = 'http://download.osgeo.org/geos/'
     if minor >= 10:
-        geos_download_uri += version = '/'
+        geos_download_uri += version + '/'
 
-    local_gzip = 'geos=%s.tar.bz2' % version
+    local_gzip = 'geos-%s.tar.bz2' % version
     geos_download_uri += local_gzip
     _download_archive(geos_download_uri)
+    return local_gzip
+
+def build_geos(version):
+    """Build the target GEOS version from source."""
+    gzip_filepath = download_geos(version)
+    _unzip_tarfile(gzip_filepath, 'bz2')
+    geos_dirname = gzip_filepath.replace('.tar.bz2', '')
+    cur_dir = os.getcwd()
+    os.chdir(geos_dirname)
+    subprocess.call('nmake /f makefile.vc MSVC_VER=1500', shell=True)
+    os.chdir(cur_dir)
+    return os.path.abspat(geos_dirname) 
 
 def download_gdal(version, fmt='gz'):
     """Download the approprate version of the GDAL source from the official
@@ -58,7 +75,7 @@ def download_gdal(version, fmt='gz'):
 
     return os.path.abspath(local_gzip)
 
-def set_gdal_home(filepath):
+def set_gdal_home(filepath, dirs):
     tmp_out_filepath = os.path.join(os.getcwd(), 'tmp_%s' %
         os.path.basename(filepath))
     new_out_file = open(tmp_out_filepath, 'w')
@@ -70,6 +87,11 @@ def set_gdal_home(filepath):
             elif line.startswith('PYDIR'):
                 new_out_file.write('PYDIR = "%s"\n' %
                     os.path.dirname(sys.executable))
+            elif line.startswith('#GEOS'):
+                if line.startwith('#GEOS_DIR'):
+                    new_out_file.write('GEOS_DIR="%s"\n' % dirs['GEOS'])
+                else:
+                    new_out_file.write(line.replace('#', ''))
             else:
                 new_out_file.write(line)
 
@@ -110,10 +132,15 @@ if __name__ == '__main__':
         zip = zipfile.ZipFile(local_zip)
         zip.extractall('.')
 
+    geos_dir = build_geos('3.4.2')
+
     os.chdir(gdal_dir)
     if platform.system() == 'Windows':
         # set the GDAL_HOME folder to something sensible, like the project dir
-        set_gdal_home(os.path.abspath('nmake.opt'))
+        dirs = {
+            'GEOS': geos_dir,
+        }
+        set_gdal_home(os.path.abspath('nmake.opt'), dirs)
         subprocess.call('nmake /f makefile.vc')
         os.chdir('swig\\python')
         subprocess.call('python setup.py build bdist_wininst', shell=True)
