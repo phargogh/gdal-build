@@ -1,6 +1,13 @@
 # gdal source folders and downloaded archives
-gdal-*
+gdal*
 geos-*
 
 # vim noise
 *.sw*
+*.*~
+
+# python noise
+*.pyc
+
+# temp nmake options file
+tmp_nmake.opt
