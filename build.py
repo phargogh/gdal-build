@@ -49,7 +49,7 @@ if __name__ == '__main__':
         print 'Building from source archive %s' % source_filepath
         local_gzip = source_filepath
     else:
-        gdal_version = '1.11.0'
+        gdal_version = '1.11.1'
         local_gzip = download_gdal(gdal_version)
 
     gdal_dir = local_gzip.replace('.tar.gz', '')
@@ -62,9 +62,17 @@ if __name__ == '__main__':
     tfile.extractall('.')
 
     os.chdir(gdal_dir)
-    subprocess.call('./autogen.sh', shell=True)
-    subprocess.call('./configure --with-python', shell=True)
-    subprocess.call('make', shell=True)
+    if platform.system() == 'Windows':
+        # set the GDAL_HOME folder to something sensible, like the project dir
+        set_gdal_home(os.path.abspath('nmake.opt'))
+        subprocess.call('nmake /f makefile.vc')
+        os.chdir('swig\\python')
+        subprocess.call('python setup.py build bdist_wininst', shell=True)
+        subprocess.call('python setup.py build bdist_wheel', shell=True)
+    else:
+        subprocess.call('./autogen.sh', shell=True)
+        subprocess.call('./configure --with-python', shell=True)
+        subprocess.call('make', shell=True)
 
     end_time = time.time()
     print 'All operations took %ss' % ((end_time - start_time))
