@@ -88,7 +88,7 @@ def set_gdal_home(filepath, dirs):
                 new_out_file.write('PYDIR = "%s"\n' %
                     os.path.dirname(sys.executable))
             elif line.startswith('#GEOS'):
-                if line.startwith('#GEOS_DIR'):
+                if line.startswith('#GEOS_DIR'):
                     new_out_file.write('GEOS_DIR="%s"\n' % dirs['GEOS'])
                 else:
                     new_out_file.write(line.replace('#', ''))
