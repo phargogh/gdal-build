@@ -1,5 +1,6 @@
 # gdal source folders and downloaded archives
 gdal-*
+geos-*
 
 # vim noise
 *.sw*
