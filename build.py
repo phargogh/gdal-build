@@ -42,7 +42,7 @@ def build_geos(version):
     os.chdir(geos_dirname)
     subprocess.call('nmake /f makefile.vc MSVC_VER=1500', shell=True)
     os.chdir(cur_dir)
-    return os.path.abspat(geos_dirname) 
+    return os.path.abspath(geos_dirname) 
 
 def download_gdal(version, fmt='gz'):
     """Download the approprate version of the GDAL source from the official
